@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./styles/App.css";
 import PostList from "./components/PostList";
 import MyButton from "./components/ui/button/MyButton";
@@ -6,26 +6,19 @@ import PostForm from "./components/PostForm";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/ui/my_modal/MyModal";
 import { usePosts } from "./hooks/usePosts";
+import axios from "axios";
 
 function App() {
 
-  const [posts, setPosts] = useState([
-    { id: 0, title: "JavaScript", description: "Description" },
-    { id: 1, title: "Kotlin", description: "Description lalala" },
-    { id: 2, title: "Java", description: "Description lollollol" },
-    { id: 3, title: "Swift", description: "Description hahaha" },
-    { id: 4, title: "Python", description: "Description hahaha" },
-    { id: 5, title: "CSS", description: "Description hahaha" },
-    { id: 6, title: "HTML", description: "Description hahaha" },
-    { id: 7, title: "Go", description: "Description hahaha" },
-    { id: 8, title: "Ruby", description: "Description hahaha" },
-    { id: 9, title: "C#", description: "Description hahaha" },
-    { id: 10, title: "C++", description: "Description hahaha" },
-  ])
+  const [posts, setPosts] = useState([])
 
   const [filter, setFilter] = useState({ sort: "", query: "" })
   const [modal, setModal] = useState(false);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -34,6 +27,11 @@ function App() {
 
   const removePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id))
+  }
+
+  async function fetchPosts() {
+    const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
+    setPosts(response.data)
   }
 
   return (
